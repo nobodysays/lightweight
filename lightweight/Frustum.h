@@ -1,6 +1,7 @@
+#pragma once
 #include "helpfile.h"
 #include "Shader.h"
-#include "Game.h"
+#include "GameObject.h"
 #include <iostream>
 struct Plane
 {
@@ -8,105 +9,60 @@ struct Plane
     float d;
     Plane(glm::vec3 n, float d) : normal(n), d(d){}
 };
-class Frustum {
+class Frustum :public GameObject
+{
 public:
     const float fovy=45;  //
     const float aspect = 4./3.;
-
+    const float near = 3.f;//
+    const float far = 15.f;//
     GLuint VAO;
     GLuint VBO;
     GLuint EBO;
 
     const float alpha = fovy / 2.;
+    const float h = 2 * far * tan(alpha);
+    const float w = aspect * h;
 
-    const float near = 0.1f;//
-    const float far = 1.f;//
+
      
     Plane* planes[6];
     Shader shader = Shader("Frustum.vert", "Frustum.frag");
-    float vertices[8 * 6] =
+
+    //const float d =  near;
+    const float wn = near * w /far;
+    const float hn = near * h / far;
+    float vertices[9 * 3] =
     {
-        -1., -1.,  1., 1.0, 1.0, 1.0,
-        -1.,  1.,  1., 1.0, 1.0, 1.0,
-         1.,  1.,  1., 1.0, 1.0, 1.0,
-         1., -1.,  1., 1.0, 1.0, 1.0,
-         1., -1., -1., 1.0, 1.0, 1.0,
-         1.,  1., -1., 1.0, 1.0, 1.0,
-        -1.,  1., -1., 1.0, 1.0, 1.0,
-        -1., -1., -1., 1.0, 1.0, 1.0
+        position.x,     position.y,       position.z,       // 0 view point
+        position.x-w/2, position.y + h/2, position.z - far, // 1 left top
+        position.x+w/2, position.y + h/2, position.z - far, // 2 right top
+        position.x+w/2, position.y - h/2, position.z - far, // 3 tight bot
+        position.x-w/2, position.y - h/2, position.z - far, // 4 left bot
+        position.x - wn / 2, position.y + hn / 2, position.z - near, // 5 left top
+        position.x + wn / 2, position.y + hn / 2, position.z - near, // 6 right top
+        position.x + wn / 2, position.y - hn / 2, position.z - near, // 7 tight bot
+        position.x - wn / 2, position.y - hn / 2, position.z - near, // 8 left bot
     };
-    glm::vec3 position = { 0, -2, 10 };
-    GLuint indices[12 * 3] = {
-        0, 3, 1,
-        3, 2, 1,
+    //glm::vec3 position = { 0, -2, 10 };
+    GLuint indices[12 * 2] = {
+        0, 1,
+        0, 2,
+        0, 3,
+        0, 4,
+        1, 2,
+        2, 3, 
+        3, 4, 
+        4, 1,
 
-        3, 4, 2,
-        2, 4, 5,
-
-        1, 2, 6,
-        6, 2, 5,
-
-        0, 1, 7,
-        7, 1 ,6,
-
-        7, 6, 5,
-        7, 5, 4,
-
-        0, 7, 3,
-        3, 7, 4
+        5, 6,
+        6, 7, 
+        7, 8, 
+        8, 5
     };
-    Frustum()
-    {
+    Frustum();
+    void Draw();
+    bool InFrustum(glm::vec3 p, float radius);
 
-
-        glGenVertexArrays(1, &VAO);
-        glGenBuffers(1, &EBO);
-        glGenBuffers(1, &VBO);
-
-        glBindVertexArray(VAO);
-            glBindBuffer(GL_ARRAY_BUFFER, VBO);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
-            glEnableVertexAttribArray(0);
-
-            glBindVertexArray(0);
-
-        shader.setMat4("projection", Game::GetInstance()->mainCamera->projection);
-        shader.setMat4("translate", glm::translate(glm::mat4(1), position));
-
-         
-        planes[0] = new Plane(glm::vec3(0, 0, -1), -glm::dot(glm::vec3(0, 0, -1), position - glm::vec3(0, 0, -0.5) ));  //front!
-        planes[1] = new Plane(glm::vec3(0, 0, 1), -glm::dot(glm::vec3(0, 0, 1),   position - glm::vec3(0, 0, 0.5) ));   //back !
-        planes[2] = new Plane(glm::vec3(0, 1, 0), -glm::dot(glm::vec3(0, 1, 0),   position - glm::vec3(0, 0.5, 0) ));   // bot!
-        planes[3] = new Plane(glm::vec3(0, -1, 0), -glm::dot(glm::vec3(0, -1, 0), position - glm::vec3(0, -0.5, 0)));   //top!
-        planes[4] = new Plane(glm::vec3(1, 0, 0), -glm::dot(glm::vec3(1, 0, 0),   position - glm::vec3(0.5, 0, 0)));    //right!
-        planes[5] = new Plane(glm::vec3(-1, 0, 0), -glm::dot(glm::vec3(-1, 0, 0), position - glm::vec3(-0.5, 0, 0)));   //left!
-
-    }
-    void Draw()
-    {
-        shader.Use();
-        shader.setMat4("view", Game::GetInstance()->mainCamera->view);
-        glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, sizeof(indices) / 3, GL_UNSIGNED_INT, 0);
-    }
-    bool InFrustum(glm::vec3 p, float radius)
-    {
-        for (size_t i = 2; i < 6; i++)
-        {
-            glm::vec3 norm = planes[i]->normal;
-            auto d = planes[i]->d;
-            auto dot = glm::dot(p, norm);
-            auto res = dot + d + 2 * radius;
-            if (res < 0)
-            {
-                return false;
-            }
-
-        }
-        return true;
-    }
+    //glm::mat4 projection;
 };

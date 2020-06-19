@@ -53,21 +53,29 @@ void UnitsKeyboardInputComponent::Process(GameObject& go)
 {
     auto win = Game::GetInstance()->window;
 
-    if (glfwGetKey(win, GLFW_KEY_W))
+    if (glfwGetKey(win, GLFW_KEY_UP))
     {
-        go.position += glm::vec3(0, 1, 0) * 0.004f;
+        go.position -= glm::vec3(0, 0, 1) * 0.004f;
     }
-    if (glfwGetKey(win, GLFW_KEY_S))
+    if (glfwGetKey(win, GLFW_KEY_DOWN))
     {
-        go.position -= glm::vec3(0, 1, 0) * 0.004f;
+        go.position += glm::vec3(0, 0, 1) * 0.004f;
     }
-    if (glfwGetKey(win, GLFW_KEY_A))
+    if (glfwGetKey(win, GLFW_KEY_LEFT))
+    {
+        go.position -= glm::vec3(1, 0, 0) * 0.004f;
+    }
+    if (glfwGetKey(win, GLFW_KEY_RIGHT))
     {
         go.position += glm::vec3(1, 0, 0) * 0.004f;
     }
-    if (glfwGetKey(win, GLFW_KEY_D))
+    if (glfwGetKey(win, GLFW_KEY_RIGHT_SHIFT))
     {
-        go.position -= glm::vec3(1, 0, 0) * 0.004f;
+        go.position += glm::vec3(0, -1, 0) * 0.004f;
+    }
+    if (glfwGetKey(win, GLFW_KEY_ENTER))
+    {
+        go.position += glm::vec3(0, 1, 0) * 0.004f;
     }
     if (glfwGetKey(win, GLFW_KEY_Q))
     {
@@ -77,6 +85,7 @@ void UnitsKeyboardInputComponent::Process(GameObject& go)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
+
     if (glfwGetKey(win, GLFW_KEY_ESCAPE))
         glfwSetWindowShouldClose(win, true);
 }

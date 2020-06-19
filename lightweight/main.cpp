@@ -50,29 +50,30 @@ int main()
     glfwSwapInterval(0);
     glfwSetInputMode(glfwWin, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
-    constexpr int w = 200;
-    constexpr int h = 200;
-    constexpr int d = 1;
+    constexpr int w = 12;
+    constexpr int h = 1;
+    constexpr int d = 10;
     Camera camera;
-    //camera.position = { 0, 0, 4 };
+    camera.position = { 0, 0, 4 };
+    camera.frustum->AddComponent(new UnitsKeyboardInputComponent());
     Game::GetInstance()->mainCamera = &camera;
     Cube* cubes[w][h][d];
     auto keyboardInputComponent = new CameraKeyboardInputComponent();
     auto mouseInputComponent = new MouseInputComponent();
-    //camera.AddComponent(mouseInputComponent);
-    //camera.AddComponent(keyboardInputComponent);
+    camera.AddComponent(mouseInputComponent);
+    camera.AddComponent(keyboardInputComponent);
     for (int i = 0; i < w; i++)
         for (int j = 0; j < h; j++)
         {
             for (int k = 0; k < d; k++)
             {
                 cubes[i][j][k] = new Cube();
-                cubes[i][j][k]->AddComponent(new UnitsKeyboardInputComponent());
-                cubes[i][j][k]->position = { i - w / 2, j - h / 2,10 + k };
+                //cubes[i][j][k]->AddComponent(new UnitsKeyboardInputComponent());
+                cubes[i][j][k]->position = { i - w / 2, j - h / 2,-6 - k };
             }
             
         }
-    Frustum f;
+    //Frustum f;
     int entitycounter;
     while (!glfwWindowShouldClose(glfwWin))
     {
@@ -85,15 +86,15 @@ int main()
             for (size_t j = 0; j < h; j++)
                 for (size_t k = 0;k < d; k++)
                 {
-                    if (f.InFrustum(cubes[i][j][k]->position, 0.5))
+                    if (camera.frustum->InFrustum(cubes[i][j][k]->position, 0.5))
                     {
-                        cubes[i][j][k]->Draw();  
+                        cubes[i][j][k]->Draw();  entitycounter++;
                     }
+
                     cubes[i][j][k]->Update();
                 }
+        //std::cout <<"entities: "<< entitycounter << std::endl;
         camera.Update();
-        f.Draw();
-        
         glfwSwapBuffers(glfwWin);
     }
 }
