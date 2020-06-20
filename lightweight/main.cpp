@@ -73,27 +73,22 @@ int main()
             
         }
 
-    GLuint testVAO;
-    GLuint testVBO;
+    GLuint uboMatrices;
+    glGenBuffers(1, &uboMatrices);
 
-    glGenVertexArrays(1, &testVAO);
-    glGenBuffers(1, &testVBO);
-    float v[] =
-    {
-        0, 0, 0, 
-        0, 1, 2, 
-        -3, 2, 0
-    };
-    glBindVertexArray(testVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, testVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+    glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
-    glEnableVertexAttribArray(0);
-    glBindVertexArray(0);
+    glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, 2 * sizeof(glm::mat4));
 
-    Shader test = Shader("test.vert", "test.frag");
-    glEnable(GL_PROGRAM_POINT_SIZE);
+    Game::GetInstance()->uboMatrices = uboMatrices;
+
+    glm::mat4 projection = Game::GetInstance()->mainCamera->projection;
+    glBindBuffer(GL_UNIFORM_BUFFER, Game::GetInstance()->uboMatrices);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    
     int entitycounter;
     while (!glfwWindowShouldClose(glfwWin))
     {
@@ -114,8 +109,6 @@ int main()
                     cubes[i][j][k]->Update();
                 }
         //std::cout <<"entities: "<< entitycounter << std::endl;
-
-        test.Use();
         glDrawArrays(GL_POINTS, 0, 3);
 
         camera.Update();

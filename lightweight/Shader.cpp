@@ -124,3 +124,13 @@ void Shader::setInt(const char* value, int f)
     GLuint loc = glGetUniformLocation(program, value);
     glUniform1i(loc, f);
 }
+
+GLuint Shader::getUniformBlockIndex(const char* value)
+{
+    return glGetUniformBlockIndex(program, "Matrices");
+}
+
+void Shader::bindBlock(const char* blockName, int index)
+{
+    glUniformBlockBinding(program, getUniformBlockIndex(blockName), index);
+}

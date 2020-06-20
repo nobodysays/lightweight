@@ -19,5 +19,7 @@ public:
 	 void setVec3(const char* value, glm::vec3 vec);
 	 void setFloat(const char* value, float f);
 	 void setInt(const char* value, int f);
+	 GLuint getUniformBlockIndex(const char* value);
+	 void bindBlock(const char* blockName, int index);
 };
 

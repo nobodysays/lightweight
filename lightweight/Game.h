@@ -6,6 +6,7 @@ class Game
 private:
     inline Game(){}
 public:
+    GLuint uboMatrices;
     static Game* instance;
     static Game* GetInstance();
     GLFWwindow* window = nullptr;

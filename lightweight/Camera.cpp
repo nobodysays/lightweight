@@ -1,6 +1,7 @@
 #include "Camera.h"
 #include "MouseInputComponent.h"
 #include <iostream>
+#include "Game.h"
 //#include "Cube.h"
 Camera::Camera()
 {
@@ -17,6 +18,11 @@ void Camera::Update()
 
 	 cameraFront = glm::normalize(cameraFront);
 	 view = glm::lookAt(position, position + cameraFront, cameraUp);
+
+
+	 glBindBuffer(GL_UNIFORM_BUFFER, Game::GetInstance()->uboMatrices);
+	 glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));
+	 glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 bool Camera::IsSphereInFrustum(const glm::vec3& position, const float& radius)

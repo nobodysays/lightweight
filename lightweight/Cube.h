@@ -61,7 +61,7 @@ public:
             glEnableVertexAttribArray(1);
             glBindVertexArray(0);
 
-        shader.setMat4("projection", Game::GetInstance()->mainCamera->projection);
+            shader.bindBlock("Matrices", 0);
     }
 
 };
