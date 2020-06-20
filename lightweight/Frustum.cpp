@@ -48,7 +48,7 @@ void Frustum::Draw()
     shader.setMat4("translate", glm::translate(glm::mat4(1), position));
 
     shader.Use();
-    shader.setMat4("view", Game::GetInstance()->mainCamera->view);
+    shader.setMat4("view", glm::mat4(1));
     glBindVertexArray(VAO);
     glDrawElements(GL_LINES, sizeof(indices) / 2, GL_UNSIGNED_INT, 0);
 
@@ -70,12 +70,13 @@ void Frustum::Draw()
 
 bool Frustum::InFrustum(glm::vec3 p, float radius)
 {
+    glm::vec3 a = Game::GetInstance()->mainCamera->view * glm::vec4(p, 1);
     for (size_t i = 0; i < 6; i++)
     {
 
         glm::vec3 norm = planes[i]->normal;
         auto d = planes[i]->d;
-        auto dot = glm::dot(p, norm);
+        auto dot = glm::dot(a, norm);
         auto res = dot + d + 2 * radius;
         //std::cout << res<<std::endl;
         if (res < 0)

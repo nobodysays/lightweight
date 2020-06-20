@@ -15,7 +15,7 @@ public:
     const float fovy=45;  //
     const float aspect = 4./3.;
     const float near = 3.f;//
-    const float far = 15.f;//
+    const float far = 40.f;//
     GLuint VAO;
     GLuint VBO;
     GLuint EBO;

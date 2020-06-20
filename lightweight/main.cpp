@@ -50,11 +50,11 @@ int main()
     glfwSwapInterval(0);
     glfwSetInputMode(glfwWin, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
-    constexpr int w = 12;
+    constexpr int w = 22;
     constexpr int h = 1;
-    constexpr int d = 10;
+    constexpr int d = 20;
     Camera camera;
-    camera.position = { 0, 0, 4 };
+    camera.position = { 0, 0, 0 };
     camera.frustum->AddComponent(new UnitsKeyboardInputComponent());
     Game::GetInstance()->mainCamera = &camera;
     Cube* cubes[w][h][d];
@@ -93,7 +93,7 @@ int main()
 
                     cubes[i][j][k]->Update();
                 }
-        //std::cout <<"entities: "<< entitycounter << std::endl;
+        std::cout <<"entities: "<< entitycounter << std::endl;
         camera.Update();
         glfwSwapBuffers(glfwWin);
     }
