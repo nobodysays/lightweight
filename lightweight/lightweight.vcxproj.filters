@@ -56,10 +56,10 @@
     <None Include="cube.vert">
       <Filter>Исходные файлы\Shaders</Filter>
     </None>
-    <None Include="Frustum.frag">
+    <None Include="test.vert">
       <Filter>Исходные файлы\Shaders</Filter>
     </None>
-    <None Include="Frustum.vert">
+    <None Include="test.frag">
       <Filter>Исходные файлы\Shaders</Filter>
     </None>
   </ItemGroup>

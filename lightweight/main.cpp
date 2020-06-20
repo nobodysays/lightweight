@@ -51,11 +51,10 @@ int main()
     glfwSetInputMode(glfwWin, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
     constexpr int w = 22;
-    constexpr int h = 1;
-    constexpr int d = 20;
+    constexpr int h = 5;
+    constexpr int d = 1;
     Camera camera;
     camera.position = { 0, 0, 0 };
-    camera.frustum->AddComponent(new UnitsKeyboardInputComponent());
     Game::GetInstance()->mainCamera = &camera;
     Cube* cubes[w][h][d];
     auto keyboardInputComponent = new CameraKeyboardInputComponent();
@@ -68,12 +67,33 @@ int main()
             for (int k = 0; k < d; k++)
             {
                 cubes[i][j][k] = new Cube();
-                //cubes[i][j][k]->AddComponent(new UnitsKeyboardInputComponent());
+
                 cubes[i][j][k]->position = { i - w / 2, j - h / 2,-6 - k };
             }
             
         }
-    //Frustum f;
+
+    GLuint testVAO;
+    GLuint testVBO;
+
+    glGenVertexArrays(1, &testVAO);
+    glGenBuffers(1, &testVBO);
+    float v[] =
+    {
+        0, 0, 0, 
+        0, 1, 2, 
+        -3, 2, 0
+    };
+    glBindVertexArray(testVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, testVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+    glBindVertexArray(0);
+
+    Shader test = Shader("test.vert", "test.frag");
+    glEnable(GL_PROGRAM_POINT_SIZE);
     int entitycounter;
     while (!glfwWindowShouldClose(glfwWin))
     {
@@ -86,14 +106,18 @@ int main()
             for (size_t j = 0; j < h; j++)
                 for (size_t k = 0;k < d; k++)
                 {
-                    if (camera.frustum->InFrustum(cubes[i][j][k]->position, 0.5))
+                    if (camera.IsSphereInFrustum(cubes[i][j][k]->position, 0.5))
                     {
                         cubes[i][j][k]->Draw();  entitycounter++;
                     }
 
                     cubes[i][j][k]->Update();
                 }
-        std::cout <<"entities: "<< entitycounter << std::endl;
+        //std::cout <<"entities: "<< entitycounter << std::endl;
+
+        test.Use();
+        glDrawArrays(GL_POINTS, 0, 3);
+
         camera.Update();
         glfwSwapBuffers(glfwWin);
     }

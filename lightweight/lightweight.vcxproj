@@ -154,8 +154,8 @@
   <ItemGroup>
     <None Include="cube.frag" />
     <None Include="cube.vert" />
-    <None Include="Frustum.frag" />
-    <None Include="Frustum.vert" />
+    <None Include="test.frag" />
+    <None Include="test.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
