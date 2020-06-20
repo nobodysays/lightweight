@@ -13,3 +13,5 @@ void Clamp(T& value, const T& min, const T& max)
     if (value < min)
         value = min;
 }
+
+

@@ -40,6 +40,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     GLFWwindow* glfwWin = glfwCreateWindow(displayWidth, displayHeight, "title", nullptr, nullptr);
+    glfwSetWindowPos(glfwWin, 800, 300);
     Game::GetInstance()->window = glfwWin;
     glfwMakeContextCurrent(glfwWin);
     glewExperimental = GL_TRUE;
@@ -108,8 +109,7 @@ int main()
 
                     cubes[i][j][k]->Update();
                 }
-        //std::cout <<"entities: "<< entitycounter << std::endl;
-        glDrawArrays(GL_POINTS, 0, 3);
+        std::cout <<"entities: "<< entitycounter << std::endl;
 
         camera.Update();
         glfwSwapBuffers(glfwWin);

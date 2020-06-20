@@ -3,9 +3,11 @@ out vec4 FragColor;
 
 in vec3 Normal;
 in vec3 Position;
-
+in vec3 color;
 //uniform vec3 cameraPos;
 //uniform samplerCube skybox;
+
+
 in mat4 Model;
 void main()
 {             
@@ -21,5 +23,5 @@ void main()
     float strength = max(dot(directionToLight, Normal), 0.3);
 
 
-    FragColor = vec4(1, 1, 0, 1);
+    FragColor = vec4(vec3(0.5), 1);
 }

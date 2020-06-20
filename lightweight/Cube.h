@@ -12,14 +12,14 @@ public:
     Shader shader = Shader("cube.vert", "cube.frag");
     float vertices[8*6] =
     {
-        -0.5, -0.5,  0.5, 1.0, 1.0, 1.0,
-        -0.5,  0.5,  0.5, 1.0, 1.0, 1.0,
-         0.5,  0.5,  0.5, 1.0, 1.0, 1.0,
-         0.5, -0.5,  0.5, 1.0, 1.0, 1.0,
-         0.5, -0.5, -0.5, 1.0, 1.0, 1.0,
-         0.5,  0.5, -0.5, 1.0, 1.0, 1.0,
-        -0.5,  0.5, -0.5, 1.0, 1.0, 1.0,
-        -0.5, -0.5, -0.5, 1.0, 1.0, 1.0
+        -0.5, -0.5,  0.5,
+        -0.5,  0.5,  0.5,
+         0.5,  0.5,  0.5,
+         0.5, -0.5,  0.5,
+         0.5, -0.5, -0.5,
+         0.5,  0.5, -0.5,
+        -0.5,  0.5, -0.5,
+        -0.5, -0.5, -0.5
     };
 
     GLuint indices[12 * 3] = {
@@ -55,10 +55,10 @@ public:
 
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
             glEnableVertexAttribArray(0);
-            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(sizeof(GLfloat) * 3));
-            glEnableVertexAttribArray(1);
+            //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(sizeof(GLfloat) * 3));
+            //glEnableVertexAttribArray(1);
             glBindVertexArray(0);
 
             shader.bindBlock("Matrices", 0);
@@ -81,7 +81,7 @@ public:
     inline void Draw()
     {
         model->shader.Use();
-        model->shader.setMat4("view", Game::GetInstance()->mainCamera->view);
+        model->shader.setFloat("time", glfwGetTime());
         model->shader.setMat4("rotation", glm::rotate<float>(glm::mat4(1), glfwGetTime() * 0.0f, { 1, 0, 1 }));
         model->shader.setMat4("translate", glm::translate(glm::mat4(1),position));
         glBindVertexArray(model->VAO);

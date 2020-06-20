@@ -62,6 +62,9 @@
     <None Include="test.frag">
       <Filter>Исходные файлы\Shaders</Filter>
     </None>
+    <None Include="cube.geom">
+      <Filter>Исходные файлы\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
