@@ -1,4 +1,5 @@
 #pragma once
+#pragma comment(lib, "glfw3.lib")
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
