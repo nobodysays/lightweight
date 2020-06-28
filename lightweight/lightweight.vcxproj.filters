@@ -80,6 +80,12 @@
     <None Include="face.frag">
       <Filter>Исходные файлы\Shaders</Filter>
     </None>
+    <None Include="quad.vert">
+      <Filter>Исходные файлы\Shaders</Filter>
+    </None>
+    <None Include="quad.frag">
+      <Filter>Исходные файлы\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">

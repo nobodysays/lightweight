@@ -7,6 +7,8 @@
 class FaceModel
 {
 public:
+    GLuint normalsVBO;
+
     GLuint leftVAO;
     GLuint leftVBO;
     GLuint leftEBO;
@@ -31,48 +33,48 @@ public:
     GLuint bottomVBO;
     GLuint bottomEBO;
     Shader shader = Shader("face.vert", "face.frag");
-    float left[4 * 3] =
+    float left[4 * 3 * 3] =
     {
-        -0.5, -0.5,-0.5,
-        -0.5, -0.5, 0.5,
-        -0.5,  0.5, 0.5,
-        -0.5,  0.5,-0.5
+        -0.5, -0.5,-0.5,-1, 0, 0,
+        -0.5, -0.5, 0.5,-1, 0, 0,
+        -0.5,  0.5, 0.5,-1, 0, 0,
+        -0.5,  0.5,-0.5,-1, 0, 0
     };
-    float right[4 * 3] =
+    float right[4 * 3 * 3] =
     {
-         0.5, -0.5, 0.5,
-         0.5, -0.5,-0.5,
-         0.5,  0.5,-0.5,
-         0.5,  0.5, 0.5
+         0.5, -0.5, 0.5, 1, 0, 0,
+         0.5, -0.5,-0.5, 1, 0, 0,
+         0.5,  0.5,-0.5, 1, 0, 0,
+         0.5,  0.5, 0.5, 1, 0, 0
     };
-    float front[4 * 3] =
+    float front[4 * 3 * 3] =
     {
-         -0.5, -0.5, 0.5,
-          0.5, -0.5, 0.5,
-          0.5,  0.5, 0.5,
-         -0.5,  0.5, 0.5
+         -0.5, -0.5, 0.5, 0, 0, 1,
+          0.5, -0.5, 0.5, 0, 0, 1,
+          0.5,  0.5, 0.5, 0, 0, 1,
+         -0.5,  0.5, 0.5 ,0, 0, 1
     };
-    float back[4 * 3] =
+    float back[4 * 3*3] =
     {
-          0.5, -0.5,-0.5,
-         -0.5, -0.5,-0.5,
-         -0.5,  0.5,-0.5,
-          0.5,  0.5,-0.5
+          0.5, -0.5,-0.5, 0, 0, -1,
+         -0.5, -0.5,-0.5, 0, 0, -1,
+         -0.5,  0.5,-0.5, 0, 0, -1,
+          0.5,  0.5,-0.5 ,0, 0, -1
 
     };
-    float top[4 * 3] =
+    float top[4 * 3*3] =
     {
-         -0.5,  0.5, 0.5,
-          0.5,  0.5, 0.5,
-          0.5,  0.5,-0.5,
-         -0.5,  0.5,-0.5
+         -0.5,  0.5, 0.5,0, 1, 0,
+          0.5,  0.5, 0.5,0, 1, 0,
+          0.5,  0.5,-0.5,0, 1, 0,
+         -0.5,  0.5,-0.5,0, 1, 0
     };
-    float bottom[4 * 3] =
+    float bottom[4 * 3*3] =
     {
-         -0.5, -0.5,-0.5,
-           0.5, -0.5,-0.5,
-           0.5, -0.5, 0.5,
-          -0.5, -0.5, 0.5
+         -0.5, -0.5,-0.5, 0, -1, 0,
+           0.5, -0.5,-0.5,0, -1, 0,
+           0.5, -0.5, 0.5,0, -1, 0,
+          -0.5, -0.5, 0.5 ,0,-1, 0
     };
     GLuint indices[2 * 3]{
         0, 1, 2,
@@ -80,6 +82,21 @@ public:
     };
     inline FaceModel()
     {
+        float normals[]={
+            -1, 0, 0,
+             1, 0, 0,
+
+             0, 0, 1,
+             0, 0, -1,
+
+             0, 1, 0,
+             0, -1, 0
+        };
+
+        glGenBuffers(1, &normalsVBO);
+        glBindBuffer(GL_ARRAY_BUFFER, normalsVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(normals),normals, GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         glGenVertexArrays(1, &leftVAO);
         glGenBuffers(1, &leftEBO);
@@ -88,11 +105,13 @@ public:
         glBindVertexArray(leftVAO);
         glBindBuffer(GL_ARRAY_BUFFER, leftVBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(left), left, GL_STATIC_DRAW);
-
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, leftEBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
         glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3*sizeof(GLfloat)));
+        glEnableVertexAttribArray(1);
+
         glBindVertexArray(0);
         //
         glGenVertexArrays(1, &rightVAO);
@@ -105,8 +124,11 @@ public:
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rightEBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
         glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(1);
+
         glBindVertexArray(0);
         //
         glGenVertexArrays(1, &frontVAO);
@@ -119,8 +141,11 @@ public:
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frontEBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
         glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(1);
+
         glBindVertexArray(0);
         //
 
@@ -134,8 +159,11 @@ public:
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, backEBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
         glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(1);
+
         glBindVertexArray(0);
         //
         glGenVertexArrays(1, &topVAO);
@@ -148,8 +176,11 @@ public:
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, topEBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
         glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(1);
+
         glBindVertexArray(0);
         //
         glGenVertexArrays(1, &bottomVAO);
@@ -162,8 +193,11 @@ public:
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bottomEBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
         glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(1);
+
         glBindVertexArray(0);
         shader.bindBlock("Matrices", 0);
     }

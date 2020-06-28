@@ -160,6 +160,8 @@
     <None Include="cube.vert" />
     <None Include="face.frag" />
     <None Include="face.vert" />
+    <None Include="quad.frag" />
+    <None Include="quad.vert" />
     <None Include="test.frag" />
     <None Include="test.vert" />
   </ItemGroup>

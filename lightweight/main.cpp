@@ -103,6 +103,86 @@ int main()
 
 
 
+
+
+
+    float quadVertices[] = {
+        // координаты  // цвета
+        -0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
+        -0.05f, -0.05f,  0.0f, 0.0f, 1.0f,
+         0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
+
+        -0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
+         0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
+         0.05f,  0.05f,  0.0f, 1.0f, 1.0f
+    };
+
+    GLuint quadVAO;
+    GLuint quadVBO;
+
+    glGenBuffers(1, &quadVBO);
+    glGenVertexArrays(1, &quadVAO);
+
+
+
+    Shader shader("quad.vert", "quad.frag");
+    glm::vec2 translations[100];
+    int index = 0;
+    float offset = 0.1f;
+    for (int y = -10; y < 10; y += 2)
+    {
+        for (int x = -10; x < 10; x += 2)
+        {
+            glm::vec2 translation;
+            translation.x = (float)x / 10.0f + offset;
+            translation.y = (float)y / 10.0f + offset;
+            translations[index++] = translation;
+        }
+    }
+
+    glBindVertexArray(quadVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+    unsigned int instanceVBO;
+    glGenBuffers(1, &instanceVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 100, &translations[0], GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glEnableVertexAttribArray(2);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glVertexAttribDivisor(2, 1);
+
+    //shader.Use();
+    //for (unsigned int i = 0; i < 100; i++)
+    //{
+    //    std::stringstream ss;
+    //    std::string index;
+    //    ss << i;
+    //    index = ss.str();
+    //    shader.setVec2(("offsets[" + index + "]").c_str(), translations[i]);
+    //}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // Set up vertex data (and buffer(s)) and attribute pointers
     GLfloat vertices[] = {
         // Positions         // Texture Coords
@@ -186,9 +266,13 @@ int main()
 
 
         //std::cout <<"entities: "<< entitycounter << std::endl;
-
+        shader.Use();
+        glBindVertexArray(quadVAO);
+        //glDrawArraysInstanced(GL_TRIANGLES, 0, 36, 100);
+        glBindVertexArray(0);
+        //glDrawArrays(GL_TRIANGLES, 0, 6);w
         // Bind Texture
-        glBindTexture(GL_TEXTURE_2D, texture);
+        //glBindTexture(GL_TEXTURE_2D, texture);
         camera.Update(deltaTime);
         world.Update(deltaTime);
         glfwSwapBuffers(glfwWin);

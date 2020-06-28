@@ -112,6 +112,13 @@ void Shader::setVec3(const char* value, glm::vec3 vec)
     glUniform3f(loc, vec.x, vec.y, vec.z);
 }
 
+void Shader::setVec2(const char* value, glm::vec2 vec)
+{
+    Use();
+    GLuint loc = glGetUniformLocation(program, value);
+    glUniform2f(loc, vec.x, vec.y);
+}
+
 void Shader::setFloat(const char* value, float f)
 {
     Use();

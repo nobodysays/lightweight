@@ -17,6 +17,7 @@ public:
 	 void setMat3(const char* value, glm::mat4 mat);
 	 void setVec4(const char* value, glm::vec4 vec);
 	 void setVec3(const char* value, glm::vec3 vec);
+	 void setVec2(const char* value, glm::vec2 vec);
 	 void setFloat(const char* value, float f);
 	 void setInt(const char* value, int f);
 	 GLuint getUniformBlockIndex(const char* value);
