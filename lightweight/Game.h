@@ -5,12 +5,13 @@ class Game
 {
 private:
     inline Game(){}
+    static Game* instance;
 public:
     GLuint uboMatrices;
-    static Game* instance;
     static Game* GetInstance();
     GLFWwindow* window = nullptr;
     class Camera* mainCamera = nullptr;
+    class World* world = nullptr;
 };
 
 

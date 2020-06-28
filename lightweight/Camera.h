@@ -11,7 +11,7 @@ public:
     const float far = 100.0f;
     glm::mat4 view       = glm::mat4(1);
     glm::mat4 projection = glm::perspective(fovy, aspect, near, far);
-    void Update() override;
+    void Update(const double&) override;
     Camera();
     bool IsSphereInFrustum(const glm::vec3& position, const float& radius);
     glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);

@@ -7,5 +7,5 @@ private:
     double prevX=0;
     double prevY=0;
 public:
-    void Process(GameObject& go) override;
+    void Process(GameObject& go, const double& deltaTime) override;
 };

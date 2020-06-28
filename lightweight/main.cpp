@@ -7,6 +7,7 @@
 #include "MouseInputComponent.h"
 #include "Camera.h"
 #include "Frustum.h"
+#include "World.h"
 #include "Chunk.h"
 //#include "Texture.h"
 #include "stb_image.h"
@@ -59,8 +60,11 @@ int main()
     constexpr int h = 5;
     constexpr int d = 1;
     Camera camera;
+    World world;
     camera.position = { 0, 0, 0 };
     Game::GetInstance()->mainCamera = &camera;
+    Game::GetInstance()->world = &world;
+    world.Generate();
     Cube* cubes[w][h][d];
     auto keyboardInputComponent = new CameraKeyboardInputComponent();
     auto mouseInputComponent = new MouseInputComponent();
@@ -157,38 +161,36 @@ int main()
     ourShader.bindBlock("Matrices", 0);
 
 
-
-    Chunk chunk;
-
+    constexpr auto n = 2;
+    double lastTime = 0;
+    double deltaTime = 0;
     while (!glfwWindowShouldClose(glfwWin))
     {
         showFPS(glfwWin);
         glfwPollEvents();
         glClearColor(0.03f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        auto currentTime = glfwGetTime();
+        deltaTime = currentTime - lastTime;
+        lastTime = currentTime;
         entitycounter = 0;
         for (size_t i = 0; i < w; i++)
             for (size_t j = 0; j < h; j++)
                 for (size_t k = 0;k < d; k++)
-                {
-                    cubes[i][j][k]->Update();
-                    if (camera.IsSphereInFrustum(cubes[i][j][k]->position, 0.5))
-                    {
-                        cubes[i][j][k]->Draw();  
-                        entitycounter++;
-                    }
+                    cubes[i][j][k]->Update(deltaTime);
 
-                }
+        for (size_t i = 0; i < w; i++)
+            for (size_t j = 0; j < h; j++)
+                for (size_t k = 0; k < d; k++)
+                    cubes[i][j][k]->Render();
 
-        std::cout <<"entities: "<< entitycounter << std::endl;
+
+        //std::cout <<"entities: "<< entitycounter << std::endl;
 
         // Bind Texture
         glBindTexture(GL_TEXTURE_2D, texture);
-        chunk.Update();
-
-
-        camera.Update();
-
+        camera.Update(deltaTime);
+        world.Update(deltaTime);
         glfwSwapBuffers(glfwWin);
     }
 }

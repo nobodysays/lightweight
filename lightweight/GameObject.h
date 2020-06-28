@@ -10,11 +10,12 @@ public:
     glm::vec3 position          = glm::vec3(0);
     glm::vec3 size              = glm::vec3(1);
     glm::vec3 localEulerAngles  = glm::vec3(0);
-    inline virtual void Update()
+    inline virtual void Update(const double& deltaTime)
     {
         for (const auto& e : components)
-            e->Process(*this);
+            e->Process(*this, deltaTime);
     }
+    virtual void Render() {};
     inline void AddComponent(Component* component)
     {
         components.push_back(component);

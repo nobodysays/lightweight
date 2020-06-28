@@ -2,7 +2,7 @@
 #include "helpfile.h"
 #include "Camera.h"
 #include "Game.h"
-void MouseInputComponent::Process(GameObject&)
+void MouseInputComponent::Process(GameObject&, const double& deltaTime)
 {
     double x;
     double y;

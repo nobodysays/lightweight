@@ -78,18 +78,21 @@ public:
             model = new CubeModel();
     }
 
-    inline void Draw()
+    inline void Render() override
     {
-        model->shader.Use();
-        model->shader.setFloat("time", glfwGetTime());
-        model->shader.setMat4("rotation", glm::rotate<float>(glm::mat4(1), glfwGetTime() * 0.0f, { 1, 0, 1 }));
-        model->shader.setMat4("translate", glm::translate(glm::mat4(1),position));
-        glBindVertexArray(model->VAO);
-        glDrawElements(GL_TRIANGLES, sizeof(model->indices)/3, GL_UNSIGNED_INT, 0);
+        if (Game::GetInstance()->mainCamera->IsSphereInFrustum(position, 0.5))
+        {
+            model->shader.Use();
+            model->shader.setFloat("time", glfwGetTime());
+            model->shader.setMat4("rotation", glm::rotate<float>(glm::mat4(1), glfwGetTime() * 0.0f, { 1, 0, 1 }));
+            model->shader.setMat4("translate", glm::translate(glm::mat4(1), position));
+            glBindVertexArray(model->VAO);
+            glDrawElements(GL_TRIANGLES, sizeof(model->indices) / 3, GL_UNSIGNED_INT, 0);
+        }
     }
 
-    inline void Update()override {
-        GameObject::Update();
+    inline void Update(const double& deltaTime)override {
+        GameObject::Update(deltaTime);
     }
 
     inline ~Cube()

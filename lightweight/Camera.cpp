@@ -8,9 +8,9 @@ Camera::Camera()
 	 frustum = new Frustum(fovy, aspect, near, far);
 }
 
-void Camera::Update()
+void Camera::Update(const double& deltaTime)
 {
-    GameObject::Update();
+    GameObject::Update(deltaTime);
 
 	 cameraFront.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
 	 cameraFront.y = sin(glm::radians(pitch)); 

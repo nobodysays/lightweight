@@ -2,6 +2,8 @@
 #include "helpfile.h"
 #include "GameObject.h"
 #include "Shader.h"
+#include "Game.h"
+#include "Camera.h"
 class FaceModel
 {
 public:
@@ -171,6 +173,7 @@ public:
 
 
 
+
 struct Face
 {
     static FaceModel* model;
@@ -246,9 +249,10 @@ struct FrontFace : Face
         glDrawElements(GL_TRIANGLES, sizeof(model->indices) / 3, GL_UNSIGNED_INT, 0);
     }
 };
-#define c 6
-struct ChunkBlock
+#define c 10
+class ChunkBlock
 {
+public:
     Face* faces[6];
     GLuint visibleFaces=0;
     glm::vec3 position;
@@ -266,6 +270,11 @@ struct ChunkBlock
         }
     }
 };
+class StoneBlock : public ChunkBlock
+{
+
+};
+
 enum BlockIds
 {
     AIR = 0,
@@ -277,11 +286,26 @@ class Chunk : public GameObject
 {
 public:
 
-    BlockIds blockIDs[c][c][c];
     ChunkBlock* blocks[c][c][c];
 
-    void Update() override;
-    Chunk()
+    void Update(const double&) override;
+    inline Chunk(glm::vec3 position) 
+    {
+        this->position = position;
+        for (size_t x = 0; x < c; x++)
+            for (size_t y = 0; y < c; y++)
+                for (size_t z = 0; z < c; z++)
+                {
+                    if ((x-5) * (x - 5) + (z-5) * (z - 5) <= c)
+                    {
+                        blocks[x][y][z] = new StoneBlock();
+                    }
+                    else
+                        blocks[x][y][z] = nullptr;
+                }
+    }
+    void GenerateMesh();
+    inline void Render() override
     {
         for (size_t x = 0; x < c; x++)
         {
@@ -289,13 +313,14 @@ public:
             {
                 for (size_t z = 0; z < c; z++)
                 {
-                    blockIDs[x][y][z] = STONE;
+                    if (blocks[x][y][z] && Game::GetInstance()->mainCamera->IsSphereInFrustum(blocks[x][y][z]->position, 0.1))
+                    {
+                        blocks[x][y][z]->Draw();
+                    }
                 }
             }
         }
-        GenerateMesh();
     }
 private:
-    void GenerateMesh();
 };
 
